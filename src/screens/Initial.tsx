@@ -17,6 +17,7 @@ import {
     LearnMoreLinks,
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Message from '../components/Message';
 
 
 type SectionProps = PropsWithChildren<{
@@ -70,6 +71,7 @@ const Initial = () => {
                 style={{
                     backgroundColor: isDarkMode ? Colors.black : Colors.white,
                 }}>
+                <Message />
                 <Section title="Step One">
                     Edit <Text style={styles.highlight}>App.tsx</Text> to change this
                     screen and then come back to see your edits.
