@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Initial from "../screens/Initial"
+import CatalogScreen from '../screens/Catalog';
 
 const Stack = createNativeStackNavigator();
 
@@ -8,7 +8,7 @@ const RootNavigator = () => {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Initial" component={Initial} options={{ headerShown: false }} />
+      <Stack.Screen name="Catalog" component={CatalogScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }
