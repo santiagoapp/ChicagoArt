@@ -9,15 +9,20 @@ export interface ArtWork {
     description: string;
     price_display: string;
     thumbnail: {
-        lqip: string
-    }
-}
-
-export interface PaginationProps {
-    total: number
-    limit: number
-    offset: number
-    total_pages: number
-    current_page: number
-    next_url: string
-}
+      lqip: string;
+    };
+    api_link: string;
+    artwork_type_title: string;
+    date_start: number;
+    date_end: number;
+    date_display: string;
+  }
+  
+  export interface PaginationProps {
+    total: number;
+    limit: number;
+    offset: number;
+    total_pages: number;
+    current_page: number;
+    next_url: string;
+  }
