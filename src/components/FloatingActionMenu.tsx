@@ -5,7 +5,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const FloatingActionMenu = () => {
-    const [isOpened, setIsOpened] = useState(true);
+    const [isOpened, setIsOpened] = useState(false);
     const navigation = useNavigation();
     const options = [
         { caption: "Favorites", route: "Favorites" },
@@ -19,6 +19,7 @@ const FloatingActionMenu = () => {
                 {options.map(item => {
                     return (
                         <TouchableOpacity
+                            key={item.route}
                             onPress={() => {
                                 goTo(item.route)
                             }}>

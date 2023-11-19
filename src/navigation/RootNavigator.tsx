@@ -22,16 +22,18 @@ const RootNavigator = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Catalog">
         {props => <>
-          <AnimatedHeader {...props}><CatalogScreen /></AnimatedHeader>
+          <AnimatedHeader searchEnabled={true} {...props}><CatalogScreen /></AnimatedHeader>
           <FloatingActionMenu />
         </>
         }
       </Stack.Screen>
-      <Stack.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={headerOptions}
-      />
+      <Stack.Screen name="Favorites">
+        {props => <>
+          <AnimatedHeader searchEnabled={false} {...props}><FavoritesScreen /></AnimatedHeader>
+          <FloatingActionMenu />
+        </>
+        }
+      </Stack.Screen>
       <Stack.Screen
         name="Artwork"
         component={ArtworkScreen}

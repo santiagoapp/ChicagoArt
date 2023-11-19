@@ -27,7 +27,6 @@ const Item = ({ item }: ItemProps) => {
         image_id,
         artist_display,
         description,
-        price_display,
         api_link,
     } = item;
 
@@ -122,7 +121,7 @@ const ArtworkList = (props: ArtworkListProps) => {
     const loadNextPage = () => setNext && setNext(pagination?.next_url)
     return (
         <View style={styles.listContainer}>
-            {data.length > 0 && !loading?
+            {data.length > 0?
                 <>
                     {data.map((item: ArtWork) => <Item key={String(item.id)} item={item} />)}
                     {loading ? <ActivityIndicator size={'large'} /> : null}
@@ -140,7 +139,7 @@ const ArtworkList = (props: ArtworkListProps) => {
 
                     </View>
                 </>
-                : <EmptyComponent></EmptyComponent>
+                : !loading && <EmptyComponent />
             }
         </View >
     )

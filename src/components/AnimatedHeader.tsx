@@ -11,10 +11,12 @@ import { useNavigation } from '@react-navigation/native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 interface AnimatedHeaderProps {
   children: React.JSX.Element
+  searchEnabled?: boolean
 }
 
-const AnimatedHeader = ({ children }: AnimatedHeaderProps) => {
+const AnimatedHeader = ({ children, ...rest }: AnimatedHeaderProps) => {
 
+  const { searchEnabled } = rest;
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
   const logo = require('../assets/images/logo.png')
@@ -69,6 +71,8 @@ const AnimatedHeader = ({ children }: AnimatedHeaderProps) => {
             <TextInput
               autoCapitalize="words"
               autoComplete="name"
+              editable={searchEnabled}
+              selectTextOnFocus={searchEnabled}
               placeholder="Find art"
               placeholderTextColor="#778599"
               style={styles.headerSearchInput}
@@ -113,14 +117,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: '#fff',
     shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
 
-        elevation: 5,
+    elevation: 5,
   },
   stickyHeader: {
     flexDirection: 'row',

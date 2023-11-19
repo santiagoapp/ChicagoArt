@@ -29,10 +29,10 @@ const EmptyComponent = () => (
             </View>
           </View>
 
-          <Text style={styles.emptyTitle}>Your inbox is empty</Text>
+          <Text style={styles.emptyTitle}>Your gallery is empty</Text>
 
           <Text style={styles.emptyDescription}>
-            Once you start a new conversation, you'll see new messages here
+            Reload the app or save a new favorite, tu'll see new arts here
           </Text>
         </View>
       </View>

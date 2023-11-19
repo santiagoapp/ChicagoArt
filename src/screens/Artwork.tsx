@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#2c2c2c',
+    maxWidth:"80%"
   },
   headerBadge: {
     backgroundColor: '#0066ff',
