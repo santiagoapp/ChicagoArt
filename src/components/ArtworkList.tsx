@@ -122,7 +122,7 @@ const ArtworkList = (props: ArtworkListProps) => {
     const loadNextPage = () => setNext && setNext(pagination?.next_url)
     return (
         <View style={styles.listContainer}>
-            {data.length > 0 ?
+            {data.length > 0 && !loading?
                 <>
                     {data.map((item: ArtWork) => <Item key={String(item.id)} item={item} />)}
                     {loading ? <ActivityIndicator size={'large'} /> : null}
@@ -223,7 +223,6 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: 'grey',
     },
-    emptyComponent: { marginTop: 20, color: 'white', fontSize: 15 },
     btnXS: {
         flexDirection: 'row',
         alignItems: 'center',

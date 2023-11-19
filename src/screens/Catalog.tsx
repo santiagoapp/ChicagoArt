@@ -5,6 +5,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import ArtworkList from '../components/ArtworkList';
+import FloatingActionMenu from '../components/FloatingActionMenu';
 
 const CatalogScreen = () => {
     const [next, setNext] = useState<string | undefined>();

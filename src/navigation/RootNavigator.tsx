@@ -5,6 +5,7 @@ import CatalogScreen from '../screens/Catalog';
 import FavoritesScreen from '../screens/Favorites';
 import ArtworkScreen from '../screens/Artwork';
 import AnimatedHeader from '../components/AnimatedHeader';
+import FloatingActionMenu from '../components/FloatingActionMenu';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,22 +18,26 @@ const headerOptions = {
 const RootNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Catalog">
-          {props => <AnimatedHeader {...props}><CatalogScreen /></AnimatedHeader>}
-        </Stack.Screen>
-        <Stack.Screen
-          name="Favorites"
-          component={FavoritesScreen}
-          options={headerOptions}
-        />
-        <Stack.Screen
-          name="Artwork"
-          component={ArtworkScreen}
-          options={headerOptions}
-        />
-      
+
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Catalog">
+        {props => <>
+          <AnimatedHeader {...props}><CatalogScreen /></AnimatedHeader>
+          <FloatingActionMenu />
+        </>
+        }
+      </Stack.Screen>
+      <Stack.Screen
+        name="Favorites"
+        component={FavoritesScreen}
+        options={headerOptions}
+      />
+      <Stack.Screen
+        name="Artwork"
+        component={ArtworkScreen}
+        options={headerOptions}
+      />
+
     </Stack.Navigator>
   );
 };
