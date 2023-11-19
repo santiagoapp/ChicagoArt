@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 180,
   },
-  headerContainer:{
+  headerContainer: {
     backgroundColor: '#fff',
   },
   header: {
@@ -112,6 +112,15 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     justifyContent: 'flex-end',
     backgroundColor: '#fff',
+    shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
   },
   stickyHeader: {
     flexDirection: 'row',
@@ -121,10 +130,10 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: '100%',
   },
-  logo:{
-    objectFit:"contain",
+  logo: {
+    objectFit: "contain",
     height: 90,
-    width:"100%"
+    width: "100%"
   },
   headerSearch: {
     position: 'relative',

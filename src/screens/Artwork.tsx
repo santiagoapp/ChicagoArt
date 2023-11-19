@@ -1,31 +1,84 @@
-import React, {useMemo} from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
-  ActivityIndicator,
+  StyleSheet,
+  View,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
+  ActivityIndicator,
+  Animated,
   TouchableOpacity,
-  View,
 } from 'react-native';
+import { ArtWork } from '../hooks/types';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useRoute } from '@react-navigation/native';
 import useArtwork from '../hooks/useArtwork';
-import {ArtWork} from '../hooks/types';
-import {IIIF_URL} from '../utils/constants';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store';
-import {removeFavorite, setFavorite} from '../store/slicers/favorites';
-import {useRoute} from '@react-navigation/native';
-import {Notifications} from 'react-native-notifications';
+import { removeFavorite, setFavorite } from '../store/slicers/favorites';
+import { Notifications } from 'react-native-notifications';
+import { useDispatch, useSelector } from 'react-redux';
+import { IIIF_URL } from '../utils/constants';
+import { RootState } from '../store';
+
+const SECTION_TOP_OFFSET = 320;
+const SECTION_BORDER_RADIUS = 40;
+const IMAGE_WIDTH = 500;
 
 interface RouteParamsProps {
   api_link: string;
 }
-const IMAGE_WIDTH = 500;
+
+const Artwork = () => {
+  const route = useRoute();
+  const params = route.params as RouteParamsProps;
+  const api_link = params.api_link;
+  const { artwork, loading } = useArtwork(api_link);
+  return loading ? (
+    <ActivityIndicator size={'large'} />
+  ) : artwork ? (
+    <ArtworkDetails {...artwork} />
+  ) : (
+    <Text>{`Error fetching artwork ${api_link}`}</Text>
+  );
+};
 
 const ArtworkDetails = (artwork: ArtWork) => {
-  const dispatch = useDispatch();
-  const {artworks} = useSelector((state: RootState) => state.favorites);
+  const {
+    title,
+    description,
+    price_display,
+    image_id,
+    artwork_type_title,
+    date_display,
+    fiscal_year,
+    place_of_origin,
+    department_title,
+    medium_display
+  } = artwork;
 
+  const textFields = [
+    { name: "Category", value: artwork_type_title },
+    { name: "Price", value: price_display },
+    { name: "Date", value: fiscal_year },
+    { name: "Origin", value: place_of_origin },
+    { name: "Departament", value: department_title },
+    { name: "Material", value: medium_display },
+  ];
+
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const dispatch = useDispatch();
+  const { artworks } = useSelector((state: RootState) => state.favorites);
+  const animatedBackgroundScale = scrollY.interpolate({
+    inputRange: [
+      -SECTION_TOP_OFFSET - 100,
+      -SECTION_TOP_OFFSET,
+      0,
+      SECTION_TOP_OFFSET,
+      SECTION_TOP_OFFSET + 50,
+      SECTION_TOP_OFFSET + 100,
+    ],
+    outputRange: [1.5, 1.25, 1.1, 1, 0, 0],
+  });
   const handleAddToFavorites = () => {
     dispatch(setFavorite(artwork));
     Notifications.postLocalNotification({
@@ -42,123 +95,210 @@ const ArtworkDetails = (artwork: ArtWork) => {
 
   const isFavorite = useMemo(
     () =>
-      artworks?.map(favoriteArtwork => favoriteArtwork.id).includes(artwork.id),
+      artworks?.map((favoriteArtwork) => favoriteArtwork.id).includes(artwork.id),
     [artworks, artwork],
   );
 
-  const {
-    title,
-    description,
-    price_display,
-    image_id,
-    artwork_type_title,
-    date_start,
-    date_end,
-    date_display,
-  } = artwork;
-  const textFields = [
-    title,
-    description,
-    price_display,
-    image_id,
-    artwork_type_title,
-    title,
-    description,
-    price_display,
-    image_id,
-    artwork_type_title,
-    date_start,
-    date_end,
-    date_display,
-  ];
-
   return (
-    <ScrollView style={styles.artworkDetails}>
-      <View style={styles.imageContainer}>
+    <View style={{ backgroundColor: 'white', flex: 1 }}>
+      <Animated.View
+        style={{
+          transform: [
+            {
+              scaleX: animatedBackgroundScale,
+            },
+            {
+              scaleY: animatedBackgroundScale,
+            },
+          ],
+        }}>
         <Image
-          style={styles.image}
-          source={{uri: IIIF_URL(image_id, String(IMAGE_WIDTH))}}
+          style={styles.backdrop}
+          resizeMode="cover"
+          source={{ uri: IIIF_URL(image_id, String(IMAGE_WIDTH)) }}
         />
-      </View>
-      {isFavorite ? (
-        <TouchableOpacity
-          style={[styles.favorite, styles.removeFavorite]}
-          onPress={handleRemoveFromFavorites}>
-          <Text style={styles.removeFavoriteText}>{'Remove Favorite'}</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          style={styles.favorite}
-          onPress={handleAddToFavorites}>
-          <Text style={styles.favoriteText}>{'Add to Favorites'}</Text>
-        </TouchableOpacity>
-      )}
-      <View style={styles.description}>
-        {textFields.map((field, index) => (
-          <Text style={styles.text} key={index}>
-            {field}
-          </Text>
-        ))}
-      </View>
-    </ScrollView>
-  );
-};
+      </Animated.View>
+      <ScrollView
+        style={styles.container}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+          { useNativeDriver: false },
+        )}
+        scrollEventThrottle={1}>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>{title}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                isFavorite ? handleRemoveFromFavorites() : handleAddToFavorites()
+              }}>
 
-const Artwork = () => {
-  const route = useRoute();
-  const params = route.params as RouteParamsProps;
-  const api_link = params.api_link;
-  const {artwork, loading} = useArtwork(api_link);
-  return loading ? (
-    <ActivityIndicator size={'large'} />
-  ) : artwork ? (
-    <ArtworkDetails {...artwork} />
-  ) : (
-    <Text>{`Error fetching artwork ${api_link}`}</Text>
+              <View style={styles.headerBadge}>
+                <FontAwesome
+                  color={isFavorite ? '#ea266d' : '#fff'}
+                  name="heart"
+                  solid={true}
+                  size={24}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.text}>
+            {description}
+          </Text>
+
+          <View style={styles.stats}>
+            <View style={styles.statsItem}>
+              <MaterialIcons name="date-range" color="#185aca" size={16} />
+              <Text style={styles.statsItemText}>{date_display}</Text>
+            </View>
+            <View style={styles.statsItem}>
+              <MaterialIcons name="category" color="#185aca" size={16} />
+              <Text style={styles.statsItemText}>{artwork_type_title}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.lessonsOverlay}>
+          <View style={styles.lessons}>
+            <Text style={styles.lessonsTitle}>More information</Text>
+
+            {textFields.map(({ name, value }, index) => (
+              String(value) !== "" && <View key={index} style={styles.card}>
+                <View>
+                  <Text style={styles.cardTitle}>{name}</Text>
+                  <Text style={styles.cardDuration}>{value}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  artworkDetails: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#14539a',
+  container: {
+    flex: 1,
+    position: 'relative',
+    zIndex: 2,
   },
-  imageContainer: {
-    width: '100%',
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
     height: 400,
   },
-  image: {
-    width: '100%',
-    height: '90%',
-    borderRadius: 10,
-    marginVertical: 20,
-    objectFit: 'contain',
+  content: {
+    flex: 1,
+    marginTop: SECTION_TOP_OFFSET,
+    backgroundColor: '#d3e0fe',
+    borderTopLeftRadius: SECTION_BORDER_RADIUS,
+    borderTopRightRadius: SECTION_BORDER_RADIUS,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
   },
-  description: {
-    width: '100%',
-    margin: 20,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2c2c2c',
+  },
+  headerBadge: {
+    backgroundColor: '#0066ff',
+    width: 46,
+    height: 46,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    color: 'white',
-    flexWrap: 'nowrap',
+    marginTop: 16,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#3c3c3c',
+    lineHeight: 24,
   },
-  removeFavoriteText: {
-    textAlign: 'center',
-    color: 'white',
+  stats: {
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  favoriteText: {
-    textAlign: 'center',
+  statsItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
-  favorite: {
-    width: '35%',
-    height: 40,
-    justifyContent: 'center',
+  statsItemText: {
+    marginLeft: 4,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#185aca',
+  },
+  lessonsOverlay: {
+    backgroundColor: '#d3e0fe',
+  },
+  lessons: {
     backgroundColor: 'white',
-    borderRadius: 25,
-    alignSelf: 'center',
+    borderTopLeftRadius: SECTION_BORDER_RADIUS,
+    borderTopRightRadius: SECTION_BORDER_RADIUS,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
   },
-  removeFavorite: {backgroundColor: 'gray'},
+  lessonsTitle: {
+    fontSize: 25,
+    fontWeight: '700',
+    color: '#2c2c2c',
+    marginBottom: 12,
+  },
+  card: {
+    paddingTop: 12,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  cardIcon: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#185aca',
+    marginRight: 16,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#2c2c2c',
+    marginBottom: 4,
+  },
+  cardDuration: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#94b1f0',
+  },
+  cardAction: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#a4c2f5',
+  },
 });
 
 export default Artwork;

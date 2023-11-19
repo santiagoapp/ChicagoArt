@@ -8,6 +8,7 @@ import { IIIF_URL } from "../utils/constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import { removeFavorite, setFavorite } from '../store/slicers/favorites';
 import { Notifications } from "react-native-notifications";
+import EmptyComponent from "./EmptyState";
 
 const THUMBNAIL_WIDTH = 150;
 const THUMBNAIL_HEIGHT = 200;
@@ -106,11 +107,6 @@ const Item = ({ item }: ItemProps) => {
 };
 
 
-const EmptyComponent = () => (
-    <Text style={styles.emptyComponent}>{'No elements'}</Text>
-);
-
-
 interface ArtworkListProps {
     data: ArtWork[];
     loading?: boolean;
@@ -131,12 +127,14 @@ const ArtworkList = (props: ArtworkListProps) => {
                     {data.map((item: ArtWork) => <Item key={String(item.id)} item={item} />)}
                     {loading ? <ActivityIndicator size={'large'} /> : null}
                     <View style={styles.btnContainer}>
+
                         <TouchableOpacity
+                            disabled={loading}
                             onPress={() => {
                                 loadNextPage()
                             }}>
-                            <View style={styles.btnXS}>
-                                <Text style={styles.btnXSText}>See more</Text>
+                            <View style={styles.button}>
+                                <Text style={styles.buttonText}>See more</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -150,18 +148,25 @@ const ArtworkList = (props: ArtworkListProps) => {
 
 
 const styles = StyleSheet.create({
-    btnContainer:{
+    btnContainer: {
         marginTop: 20,
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     listContainer: {
         marginHorizontal: 20,
-        marginTop: 10,
         marginBottom: 50,
     },
     contentContainer: {
-        backgroundColor: 'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
         height: 180,
         borderRadius: 10,
     },
@@ -187,19 +192,19 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
     },
     rightContent: {
-        left: THUMBNAIL_WIDTH,
+        left: THUMBNAIL_WIDTH + 6,
         marginRight: THUMBNAIL_WIDTH,
         boxShadow: 'rgba(0, 0, 0, 0.24) 0 3 8',
     },
     itemContainer: {
-        rowGap: 50,
+        rowGap: 40,
     },
     imgContainerTitle: {
         zIndex: 10,
-        top: 35,
+        top: 25,
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'white',
+        color: 'black',
     },
     thumbnail: {
         width: THUMBNAIL_WIDTH,
@@ -235,6 +240,20 @@ const styles = StyleSheet.create({
         lineHeight: 18,
         fontWeight: '600',
         color: '#0d57b2',
+    },
+    button: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        marginBottom: 12,
+        backgroundColor: '#efefef',
+        borderColor: '#efefef',
+    },
+    buttonText: {
+        fontSize: 12,
+        fontWeight: '500',
     },
 });
 

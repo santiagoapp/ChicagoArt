@@ -16,6 +16,9 @@ export interface ArtWork {
     date_start: number;
     date_end: number;
     date_display: string;
+    fiscal_year: string;
+    medium_display: string;
+    department_title: string;
   }
   
   export interface PaginationProps {
