@@ -1,10 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSelector } from "react-redux";
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useNavigation } from "@react-navigation/native";
 import { ArtWork, PaginationProps } from "../hooks/types";
 import { IIIF_URL } from "../utils/constants";
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import { removeFavorite, setFavorite } from '../store/slicers/favorites';
+import { Notifications } from "react-native-notifications";
 
 const THUMBNAIL_WIDTH = 150;
 const THUMBNAIL_HEIGHT = 200;
@@ -32,26 +35,55 @@ const Item = ({ item }: ItemProps) => {
             artworks?.map(favoriteArtwork => favoriteArtwork.id).includes(item.id),
         [artworks, item],
     );
+    const dispatch = useDispatch();
+
+    const handleAddToFavorites = () => {
+        dispatch(setFavorite(item));
+        Notifications.postLocalNotification({
+            body: title,
+            title: 'New Favorite was Added',
+            sound: 'chime.aiff',
+            silent: false,
+            category: 'Favorites',
+        });
+    };
+
+    const handleRemoveFromFavorites = () => {
+        dispatch(removeFavorite(id));
+    };
+
 
     const handleOnPress = () => {
         navigation.navigate('Artwork', { api_link });
     };
 
     return (
-        <View style={styles.itemContainer}>
+        <View style={styles.itemContainer} >
             <Text style={styles.imgContainerTitle}>{title}</Text>
             <TouchableOpacity onPress={handleOnPress}>
                 <View style={styles.contentContainer}>
-                    <Image
-                        style={styles.thumbnail}
-                        source={{ uri: IIIF_URL(image_id, String(THUMBNAIL_WIDTH)) }}
-                    />
+                    <View style={styles.imageContainer}>
+                        <View style={styles.cardLikeWrapper}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    isFavorite ? handleRemoveFromFavorites() : handleAddToFavorites()
+                                }}>
+                                <View style={styles.cardLike}>
+                                    <FontAwesome
+                                        color={isFavorite ? '#ea266d' : '#222'}
+                                        name="heart"
+                                        solid={isFavorite}
+                                        size={14}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <Image
+                            style={styles.thumbnail}
+                            source={{ uri: IIIF_URL(image_id, String(THUMBNAIL_WIDTH)) }}
+                        />
+                    </View>
                     <View style={styles.rightContent}>
-                        {isFavorite ? (
-                            <View style={styles.favoriteBadge}>
-                                <Text style={styles.favoriteText}>{'Favorite'}</Text>
-                            </View>
-                        ) : null}
                         <Text style={styles.contentTitle}>Author</Text>
                         <Text style={styles.contentValue}>{artist_display}</Text>
                         <Text style={styles.contentTitle}>Origin</Text>
@@ -90,23 +122,39 @@ const ArtworkList = (props: ArtworkListProps) => {
 
     const { data, loading, pagination, setNext } = props;
 
+
+    const loadNextPage = () => setNext && setNext(pagination?.next_url)
     return (
         <View style={styles.listContainer}>
-            <FlatList
-                keyExtractor={item => String(item.id)}
-                onEndReached={() => setNext && setNext(pagination?.next_url)}
-                data={data}
-                renderItem={({ item }) => <Item item={item} />}
-                style={styles.contentFlatlist}
-                ListEmptyComponent={EmptyComponent}
-            />
-            {loading ? <ActivityIndicator size={'large'} /> : null}
-        </View>
+            {data.length > 0 ?
+                <>
+                    {data.map((item: ArtWork) => <Item key={String(item.id)} item={item} />)}
+                    {loading ? <ActivityIndicator size={'large'} /> : null}
+                    <View style={styles.btnContainer}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                loadNextPage()
+                            }}>
+                            <View style={styles.btnXS}>
+                                <Text style={styles.btnXSText}>See more</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                    </View>
+                </>
+                : <EmptyComponent></EmptyComponent>
+            }
+        </View >
     )
 }
 
 
 const styles = StyleSheet.create({
+    btnContainer:{
+        marginTop: 20,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     listContainer: {
         marginHorizontal: 20,
         marginTop: 10,
@@ -115,8 +163,25 @@ const styles = StyleSheet.create({
     contentContainer: {
         backgroundColor: 'white',
         height: 180,
-        padding: 5,
         borderRadius: 10,
+    },
+    imageContainer: {
+        position: "relative",
+        padding: 5,
+    },
+    cardLike: {
+        width: 32,
+        height: 32,
+        borderRadius: 9999,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    cardLikeWrapper: {
+        position: 'absolute',
+        zIndex: 1,
+        top: 0,
+        left: 8,
     },
     contentFlatlist: {
         paddingBottom: 100,
@@ -153,14 +218,24 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: 'grey',
     },
-    favoriteBadge: {
-        width: 70,
-        backgroundColor: 'gray',
-        alignSelf: 'flex-end',
-        borderRadius: 25,
+    emptyComponent: { marginTop: 20, color: 'white', fontSize: 15 },
+    btnXS: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 8,
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+        borderWidth: 1,
+        backgroundColor: '#efefef',
+        borderColor: '#efefef',
     },
-    favoriteText: { color: 'white', textAlign: 'center' },
-    emptyComponent: {marginTop: 20, color: 'white', fontSize: 15},
+    btnXSText: {
+        fontSize: 13,
+        lineHeight: 18,
+        fontWeight: '600',
+        color: '#0d57b2',
+    },
 });
 
 export default ArtworkList;
