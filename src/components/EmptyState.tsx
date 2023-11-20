@@ -32,7 +32,7 @@ const EmptyComponent = () => (
           <Text style={styles.emptyTitle}>Your gallery is empty</Text>
 
           <Text style={styles.emptyDescription}>
-            Reload the app or save a new favorite, tu'll see new arts here
+            Reload the app or save a new favorite, you'll see new arts here
           </Text>
         </View>
       </View>

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { ArtWork, PaginationProps } from "../hooks/types";
 import { IIIF_URL } from "../utils/constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
@@ -110,24 +110,29 @@ interface ArtworkListProps {
     data: ArtWork[];
     loading?: boolean;
     pagination?: PaginationProps;
-    setNext?: (next?: string) => void
+    setNext?: (next?: number) => void
 }
 
 const ArtworkList = (props: ArtworkListProps) => {
 
     const { data, loading, pagination, setNext } = props;
+    const route = useRoute();
+    const loadNextPage = () => setNext && pagination && setNext(pagination?.current_page + 1)
 
-
-    const loadNextPage = () => setNext && setNext(pagination?.next_url)
     return (
         <View style={styles.listContainer}>
-            {data.length > 0?
+            <View style={styles.listTitle}>
+                <Text style={styles.titleText} >{route.name}</Text>
+                {!loading && data.length > 0 && pagination?.total && <Text style={styles.countText} >{`${data.length} elements of ${pagination?.total}`}</Text>}
+            </View>
+
+            {data.length > 0 ?
                 <>
                     {data.map((item: ArtWork) => <Item key={String(item.id)} item={item} />)}
                     {loading ? <ActivityIndicator size={'large'} /> : null}
                     <View style={styles.btnContainer}>
 
-                        <TouchableOpacity
+                        {route.name !== "Favorites" && <TouchableOpacity
                             disabled={loading}
                             onPress={() => {
                                 loadNextPage()
@@ -135,7 +140,7 @@ const ArtworkList = (props: ArtworkListProps) => {
                             <View style={styles.button}>
                                 <Text style={styles.buttonText}>See more</Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
 
                     </View>
                 </>
@@ -253,6 +258,20 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '500',
     },
+    listTitle: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 10,
+    },
+    titleText: {
+        fontSize: 28,
+        color: '#717171'
+    },
+    countText: {
+        color: 'gray'
+    }
 });
 
 export default ArtworkList;

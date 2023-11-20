@@ -16,20 +16,27 @@ const headerOptions = {
 };
 
 const RootNavigator = () => {
+  const [searchText, setSearchText] = React.useState('');
+
+  const handleSearch = (search: string) => {
+    if (search) {
+      setSearchText(search);
+    }
+  };
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
 
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Catalog">
         {props => <>
-          <AnimatedHeader searchEnabled={true} {...props}><CatalogScreen /></AnimatedHeader>
+          <AnimatedHeader handleSearch={handleSearch} searchEnabled={true} {...props}><CatalogScreen searchText={searchText} /></AnimatedHeader>
           <FloatingActionMenu />
         </>
         }
       </Stack.Screen>
       <Stack.Screen name="Favorites">
         {props => <>
-          <AnimatedHeader searchEnabled={false} {...props}><FavoritesScreen /></AnimatedHeader>
+          <AnimatedHeader handleSearch={handleSearch} searchEnabled={false} {...props}><FavoritesScreen /></AnimatedHeader>
           <FloatingActionMenu />
         </>
         }

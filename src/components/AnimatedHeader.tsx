@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,17 +12,28 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 interface AnimatedHeaderProps {
   children: React.JSX.Element
   searchEnabled?: boolean
+  handleSearch: (search: string) => void
 }
 
 const AnimatedHeader = ({ children, ...rest }: AnimatedHeaderProps) => {
+  const { handleSearch } = rest
+  const [searchText, setSearchText] = useState('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      handleSearch(searchText);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchText, handleSearch]);
 
   const { searchEnabled } = rest;
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
   const logo = require('../assets/images/logo.png')
   const translateHeader = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, -100],
+    inputRange: [0, 80],
+    outputRange: [0, -80],
     extrapolate: 'clamp',
   });
   const opacityTitle = scrollY.interpolate({
@@ -76,6 +87,7 @@ const AnimatedHeader = ({ children, ...rest }: AnimatedHeaderProps) => {
               placeholder="Find art"
               placeholderTextColor="#778599"
               style={styles.headerSearchInput}
+              onChangeText={setSearchText}
             />
           </View>
         </View>

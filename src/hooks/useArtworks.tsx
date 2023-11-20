@@ -4,24 +4,31 @@ import fetchData from "../utils/api"
 import { API_URL } from "../utils/constants"
 
 
-const useArtworks = (next?: string) => {
+const useArtworks = (next?: number, search?: string) => {
     const [loading, setLoading] = useState(false);
     const [artworks, setArtworks] = useState<ArtWork[]>([]);
     const [pagination, setPagination] = useState<PaginationProps | undefined>();
     const limit = "5"
 
     useEffect(() => {
+        let queryParams: { [key: string]: string } = { limit };
+        if (next) {
+            queryParams = { ...queryParams, page: String(next) };
+        }
+        if (search) {
+            queryParams = { ...queryParams, search };
+        }
         const getData = async () => {
             setLoading(true);
-            const data = await fetchData(next ? next : API_URL, next ? {} : { limit })
+            const data = await fetchData(API_URL, queryParams)
             setArtworks([...artworks, ...data?.data]);
             setPagination(data.pagination);
             setLoading(false);
         }
         getData();
-    }, [next])
+    }, [next, search])
 
-    return { loading, artworks, pagination}
+    return { loading, artworks, pagination }
 }
 
 export default useArtworks;

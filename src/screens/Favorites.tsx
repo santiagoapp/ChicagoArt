@@ -40,12 +40,19 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#fff',
   },
-  favoriteButtonText: {textAlign: 'center'},
+  favoriteButtonText: {
+    textAlign: 'center',
+    color:"white"
+  },
   cleanFavorites: {
+    position:'absolute',
+    zIndex:10,
+    top:-10,
+    right:4,
     width: '35%',
     height: 40,
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#717171',
     borderRadius: 25,
     alignSelf: 'flex-end',
     marginRight: 20,
