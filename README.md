@@ -65,16 +65,18 @@ Follow these steps to install and run the project in your local environment:
 
 ### Favorites
 
-- Users can mark artworks as favorites.
+- Users can mark, remove and handle artworks as favorites.
 - The list of favorite artworks is stored locally on the device.
 
 ## Project Structure
 
 - `src/`: Contains the application source code.
-- `assets/`: Stores resources such as images and fonts.
-- `components/`: Reusable components.
-- `screens/`: Application screens.
-- `services/`: Logic for services such as managing favorites and local notification integration.
+- `src/assets/`: Stores resources such as images and fonts.
+- `src/components/`: Reusable components.
+- `src/screens/`: Application screens.
+- `src/hooks/`: Application hooks.
+- `src/store/`: Logic for services such as managing favorites and local notification integration.
+- `src/utils/`: Extra functionalities and API fetching.
 
 ## Contributions
 
