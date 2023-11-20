@@ -2,7 +2,8 @@
 
 This React Native project showcases artworks from the Art Institute of Chicago API. It includes features such as local push notifications and the ability to add artworks to favorites, stored locally on the device.
 
-![alt text](https://github.com/santiagoapp/ChicagoArt/blob/main/landing.jpg?raw=true)
+![alt text](https://github.com/santiagoapp/ChicagoArt/blob/main/src/assets/images/landing.png?raw=true)
+![alt text](https://github.com/santiagoapp/ChicagoArt/blob/main/src/assets/images/listimage.png?raw=true)
 
 ## Installation
 
